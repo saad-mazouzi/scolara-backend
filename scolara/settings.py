@@ -33,6 +33,8 @@ ALLOWED_HOSTS = ['*']
 CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOW_CREDENTIALS = True  # Permettre l'envoi de cookies
 
+SESSION_COOKIE_SAMESITE = 'None'
+SESSION_COOKIE_SECURE = True
 
 # Ou pour spécifier certaines origines :
 CORS_ALLOWED_ORIGINS = [
