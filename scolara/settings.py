@@ -23,6 +23,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.environ.get("SECRET_KEY")
+# SECRET_KEY = 'django-insecure-e-zzhv3vp31kv4ekm^m)%n_piwqvx!9#l7tq@w@lhtwbntqxub'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -120,30 +121,30 @@ WSGI_APPLICATION = 'scolara.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',  
-        'NAME': 'scolara_database',
-        'USER': 'root',
-        'PASSWORD': '',
-        'HOST': 'localhost',  
-        'PORT': '3306',  
-    }
-}
-
 # DATABASES = {
 #     'default': {
-#         'ENGINE': 'django.db.backends.mysql',
-#         'NAME': 'scolaradatabase',
-#         'USER': 'admin',
-#         'PASSWORD': 'Daasmaaoune123_',
-#         'HOST': 'scolara-database.cvyg2wuy2xws.eu-north-1.rds.amazonaws.com',
-#         'PORT': '3306',
-#         'OPTIONS': {
-#             'ssl': {'check_same_thread': False},  # Ajoutez cette option pour désactiver SSL si nécessaire
-#         },
+#         'ENGINE': 'django.db.backends.mysql',  
+#         'NAME': 'scolara_database',
+#         'USER': 'root',
+#         'PASSWORD': '',
+#         'HOST': 'localhost',  
+#         'PORT': '3306',  
 #     }
 # }
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'scolaradatabase',
+        'USER': 'admin',
+        'PASSWORD': 'Daasmaaoune123_',
+        'HOST': 'scolara-database.cvyg2wuy2xws.eu-north-1.rds.amazonaws.com',
+        'PORT': '3306',
+        'OPTIONS': {
+            'ssl': {'check_same_thread': False},  # Ajoutez cette option pour désactiver SSL si nécessaire
+        },
+    }
+}
 
 
 # Password validation
