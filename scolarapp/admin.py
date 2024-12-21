@@ -1,6 +1,6 @@
 from django.contrib import admin
-from .models import Role,User,EducationLevel,School,Subject,Timetable,Transaction,Grade,Course
-# from .models import RouteStation,Route,Transport,TransportStation
+from .models import Role,User,EducationLevel,School,Subject,Timetable,Transaction,Grade,Course,Event
+
 
 # Register your models here.
 admin.site.register(Role)
@@ -12,3 +12,4 @@ admin.site.register(Subject)
 admin.site.register(Grade)
 admin.site.register(Transaction)
 admin.site.register(Course)
+admin.site.register(Event)

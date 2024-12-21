@@ -41,7 +41,7 @@ from django.db.models.signals import post_save
 from rest_framework.response import Response
 from .serializers import TimeSlotSerializer
 from .models import TimeSlot
-
+from rest_framework import serializers
 
 
 
@@ -1445,6 +1445,16 @@ class EventViewSet(viewsets.ModelViewSet):
         if not school_id:
             return Event.objects.none()  
         return Event.objects.filter(school_id=school_id).order_by('date')
+
+    def perform_create(self, serializer):
+        """
+        Automatically set the school_id when creating a new event.
+        """
+        school_id = self.request.query_params.get('school_id')
+        if not school_id:
+            raise serializers.ValidationError({"detail": "Le paramètre 'school_id' est requis."})
+        serializer.save(school_id=school_id)
+
 
 class TransactionViewSet(viewsets.ModelViewSet):
     queryset = Transaction.objects.all()
