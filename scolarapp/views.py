@@ -1313,6 +1313,8 @@ class UserViewSet(viewsets.ModelViewSet):
 def dashboard_summary(request):
 
     school_id = request.COOKIES.get('SchoolId')
+    print("Cookies reçus :", request.COOKIES)
+
     if not school_id:
         return Response(
             {"error": "Aucun ID d'école trouvé dans les cookies."},
