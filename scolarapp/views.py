@@ -489,7 +489,7 @@ class UserViewSet(viewsets.ModelViewSet):
     @action(detail=False, methods=['get'])
     def get_parents(self, request):
         # Récupérer l'ID de l'école depuis les cookies
-        school_id = request.GET.get('school_id')
+        school_id = request.COOKIES.get('SchoolId')
         
         if not school_id:
             return Response(
@@ -1312,15 +1312,14 @@ class UserViewSet(viewsets.ModelViewSet):
 @api_view(['GET'])
 def dashboard_summary(request):
 
-    school_id = request.COOKIES.get('SchoolId') or request.headers.get('X-School-ID')
-
-    print("Cookies reçus :", request.COOKIES)
-
+    school_id = request.GET.get('school_id')
+    
     if not school_id:
         return Response(
-            {"error": "Aucun ID d'école trouvé dans les cookies."},
+            {"error": "Aucun ID d'école trouvé dans les paramètres de la requête."},
             status=status.HTTP_400_BAD_REQUEST
         )
+    
     
     students_count = User.objects.filter(role__name="Étudiant", school__id=school_id).count()
     teachers_count = User.objects.filter(role__name="Enseignant", school__id=school_id).count()
