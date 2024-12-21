@@ -1312,7 +1312,8 @@ class UserViewSet(viewsets.ModelViewSet):
 @api_view(['GET'])
 def dashboard_summary(request):
 
-    school_id = request.COOKIES.get('SchoolId')
+    school_id = request.COOKIES.get('SchoolId') or request.headers.get('X-School-ID')
+
     print("Cookies reçus :", request.COOKIES)
 
     if not school_id:
