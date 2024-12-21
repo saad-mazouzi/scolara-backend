@@ -178,14 +178,7 @@ class EventSerializer(serializers.ModelSerializer):
     class Meta:
         model = Event
         fields = ['id', 'title', 'description', 'date', 'school']
-        read_only_fields = ['school']  # Empêche la modification de l'école via l'API
-
-    def create(self, validated_data):
-        # Ajoute automatiquement l'école à partir des cookies lors de la création d'un événement
-        request = self.context.get('request')
-        school_id = request.COOKIES.get('SchoolId')
-        validated_data['school_id'] = school_id
-        return super().create(validated_data)
+        read_only_fields = ['school']  # Empêche la modification de 
     
 class TransactionSerializer(serializers.ModelSerializer):
     class Meta:

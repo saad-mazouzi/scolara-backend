@@ -41,7 +41,7 @@ from django.db.models.signals import post_save
 from rest_framework.response import Response
 from .serializers import TimeSlotSerializer
 from .models import TimeSlot
-from rest_framework import serializers
+
 
 
 
@@ -614,7 +614,8 @@ class UserViewSet(viewsets.ModelViewSet):
     @action(detail=False, methods=['get'])
     def get_teacher(self, request):
         # Récupérer l'ID de l'école depuis les cookies
-        school_id = request.COOKIES.get('SchoolId')
+        school_id = request.GET.get('school_id')
+
         
         if not school_id:
             return Response(
@@ -1442,28 +1443,9 @@ class EventViewSet(viewsets.ModelViewSet):
         for the currently authenticated user's school.
         """
         school_id = self.request.query_params.get('school_id')
-        print("Logs - school_id reçu pour GET :", school_id)
         if not school_id:
-            return Event.objects.none()
+            return Event.objects.none()  
         return Event.objects.filter(school_id=school_id).order_by('date')
-
-    def perform_create(self, serializer):
-        """
-        Automatically set the school_id when creating a new event.
-        """
-        school_id = self.request.query_params.get('school_id')
-        print("Logs - school_id reçu pour POST :", school_id)
-        
-        if not school_id:
-            raise serializers.ValidationError({"detail": "Le paramètre 'school_id' est requis."})
-
-        try:
-            serializer.save(school_id=school_id)
-            print("Logs - Événement créé avec succès :", serializer.instance)
-        except Exception as e:
-            print("Erreur lors de la sauvegarde de l'événement :", e)
-            raise serializers.ValidationError({"detail": "Erreur lors de la création de l'événement : {}".format(str(e))})
-
 
 class TransactionViewSet(viewsets.ModelViewSet):
     queryset = Transaction.objects.all()
