@@ -1441,7 +1441,7 @@ class EventViewSet(viewsets.ModelViewSet):
         This view should return a list of all events
         for the currently authenticated user's school.
         """
-        school_id = self.request.COOKIES.get('SchoolId')
+        school_id = self.request.query_params.get('school_id')
         if not school_id:
             return Event.objects.none()  
         return Event.objects.filter(school_id=school_id).order_by('date')
