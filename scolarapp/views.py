@@ -489,7 +489,7 @@ class UserViewSet(viewsets.ModelViewSet):
     @action(detail=False, methods=['get'])
     def get_parents(self, request):
         # Récupérer l'ID de l'école depuis les cookies
-        school_id = request.COOKIES.get('SchoolId')
+        school_id = request.GET.get('school_id')
         
         if not school_id:
             return Response(
