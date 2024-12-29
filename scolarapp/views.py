@@ -952,6 +952,7 @@ class UserViewSet(viewsets.ModelViewSet):
         # Gestion de l'image de profil
         profile_picture = request.FILES.get('profile_picture', None)
         if profile_picture:
+            print(f"Fichier 'profile_picture' reçu : {profile_picture.name}")
             teacher.profile_picture = profile_picture
 
         # Gestion du mot de passe
