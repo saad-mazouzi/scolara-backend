@@ -1069,7 +1069,7 @@ class UserViewSet(viewsets.ModelViewSet):
         teacher.education_level_id = data.get('education_level', teacher.education_level_id)
 
         # Mise à jour du statut de paiement
-        teacher.paid = data.get('paid', teacher.paid)  # Ajout ici
+        teacher.paid = bool(data.get('paid', teacher.paid))  # Ajout ici
 
         # Mettre à jour le nombre d'absences et les salaires
         teacher.absences_number = data.get('absences_number', teacher.absences_number)
