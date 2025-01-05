@@ -1836,3 +1836,23 @@ def upload_file(request):
         return JsonResponse({"message": "File uploaded successfully", "file_url": file_url}, status=200)
     
     return JsonResponse({"message": "No file provided"}, status=400)
+
+
+
+class DriverTransportsView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        user = request.user
+
+        # Vérifier si l'utilisateur est un chauffeur
+        if user.role.name != 'Chauffeur':
+            return Response({"error": "Vous n'êtes pas autorisé à accéder à cette ressource."}, status=403)
+
+        # Récupérer tous les transports liés au chauffeur
+        transports = Transport.objects.filter(driver=user)
+
+        # Retourner uniquement les noms des transports
+        transport_names = transports.values_list('name', flat=True)
+
+        return Response(transport_names, status=200)
