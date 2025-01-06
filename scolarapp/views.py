@@ -1852,7 +1852,7 @@ class DriverTransportsView(APIView):
         # Récupérer tous les transports liés au chauffeur
         transports = Transport.objects.filter(driver=user)
 
-        # Retourner uniquement les noms des transports
-        transport_names = transports.values_list('name', flat=True)
+        # Retourner les IDs et les noms des transports
+        transport_data = transports.values('id', 'name')
 
-        return Response(transport_names, status=200)
+        return Response(transport_data, status=200)
