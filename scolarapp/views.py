@@ -365,8 +365,18 @@ class EducationLevelViewset(viewsets.ModelViewSet):
             return EducationLevel.objects.filter(school_id=school_id)
         return EducationLevel.objects.all()
 
+    @action(detail=False, methods=['get'], url_path='my-education-levels')
+    def my_education_levels(self, request):
+        user = request.user
+        if user.role and user.role.name == "Enseignant":  # Vérifier que l'utilisateur est un enseignant
+            education_levels = user.education_level.all()  # Many-to-Many relation
+            serializer = self.get_serializer(education_levels, many=True)
+            return Response(serializer.data)
+        return Response({"detail": "Not allowed"}, status=403)
+
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
+    
     serializer_class = UserSerializer
 
     def get_queryset(self):
