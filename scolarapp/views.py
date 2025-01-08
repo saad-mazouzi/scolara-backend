@@ -1178,17 +1178,20 @@ class UserViewSet(viewsets.ModelViewSet):
                 teacher.save()
 
                 # Créer une transaction associée
-                Transaction.objects.create(
+                print("Création de la transaction...")
+                transaction = Transaction.objects.create(
                     type='expense',
                     amount=teacher.monthly_salary,
                     description=f"Salaire payé à {teacher.first_name} {teacher.last_name}",
                     school=teacher.school,
                 )
+                print(f"Transaction créée : {transaction.id}")
 
             return Response({"message": "Statut de paiement mis à jour et transaction enregistrée."}, status=status.HTTP_200_OK)
         except Exception as e:
             print(f"Erreur lors de la mise à jour : {e}")
             return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
         
     @action(detail=True, methods=['patch'], url_path='mark-student-paid')
     def mark_student_paid(self, request, pk=None):
