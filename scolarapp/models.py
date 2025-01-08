@@ -96,8 +96,8 @@ class User(AbstractUser):
     # Champs spécifiques aux enseignants
     subject = models.ForeignKey(Subject,on_delete=models.CASCADE,null=True,blank=True)
     paid = models.BooleanField(default=False)
-    # education_level=models.ForeignKey(EducationLevel,max_length=100,on_delete=models.CASCADE,null=True,blank=True)
-    education_level = models.ManyToManyField(EducationLevel, blank=True)  # Relation Many-to-Many
+    education_level=models.ForeignKey(EducationLevel,max_length=100,on_delete=models.CASCADE,null=True,blank=True)
+    # education_level = models.ManyToManyField(EducationLevel, blank=True)  # Relation Many-to-Many
 
     monthly_salary = models.DecimalField(max_digits=8, decimal_places=2, null=True, blank=True)  # Champ de salaire
     session_salary = models.DecimalField(max_digits=8, decimal_places=2, null=True, blank=True)  # Champ de salaire
