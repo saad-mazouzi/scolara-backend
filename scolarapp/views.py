@@ -1173,19 +1173,19 @@ class UserViewSet(viewsets.ModelViewSet):
         try:
             print(f"ID reçu pour la mise à jour : {pk}")
             teacher = get_object_or_404(User, pk=pk)
-            if not teacher.paid:
-                teacher.paid = True
-                teacher.save()
+        
+            teacher.paid = True
+            teacher.save()
 
-                # Créer une transaction associée
-                print("Création de la transaction...")
-                transaction = Transaction.objects.create(
-                    type='expense',
-                    amount=teacher.monthly_salary,
-                    description=f"Salaire payé à {teacher.first_name} {teacher.last_name}",
-                    school=teacher.school,
-                )
-                print(f"Transaction créée : {transaction.id}")
+            # Créer une transaction associée
+            print("Création de la transaction...")
+            transaction = Transaction.objects.create(
+                type='expense',
+                amount=teacher.monthly_salary,
+                description=f"Salaire payé à {teacher.first_name} {teacher.last_name}",
+                school=teacher.school,
+            )
+            print(f"Transaction créée : {transaction.id}")
 
             return Response({"message": "Statut de paiement mis à jour et transaction enregistrée."}, status=status.HTTP_200_OK)
         except Exception as e:
