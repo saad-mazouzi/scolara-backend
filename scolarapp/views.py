@@ -1173,17 +1173,25 @@ class UserViewSet(viewsets.ModelViewSet):
         try:
             print(f"ID reçu pour la mise à jour : {pk}")
             teacher = get_object_or_404(User, pk=pk)
-            if not teacher.paid:
-                teacher.paid = True
-                teacher.save()
-
-                # Créer une transaction associée
-                Transaction.objects.create(
-                    type='expense',
-                    amount=teacher.monthly_salary,
-                    description=f"Salaire payé à {teacher.first_name} {teacher.last_name}",
-                    school=teacher.school,
-                )
+            
+            # Vérifiez si l'enseignant est déjà payé
+            if teacher.paid:
+                print("L'enseignant est déjà marqué comme payé.")
+                return Response({"message": "L'enseignant est déjà payé."}, status=status.HTTP_400_BAD_REQUEST)
+            
+            # Marquez comme payé
+            teacher.paid = True
+            teacher.save()
+            print(f"L'enseignant {teacher.first_name} {teacher.last_name} est maintenant payé.")
+            
+            # Créez une transaction
+            transaction = Transaction.objects.create(
+                type='expense',
+                amount=teacher.monthly_salary,
+                description=f"Salaire payé à {teacher.first_name} {teacher.last_name}",
+                school=teacher.school,
+            )
+            print(f"Transaction créée avec succès : {transaction.id}")
 
             return Response({"message": "Statut de paiement mis à jour et transaction enregistrée."}, status=status.HTTP_200_OK)
         except Exception as e:
