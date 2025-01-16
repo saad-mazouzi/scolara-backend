@@ -4,7 +4,7 @@ from django.urls import path,include
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from .views import TransportViewSet,LocationViewSet,TransportLocationViewSet
 from .views import SchoolViewSet,CourseViewset,CourseFileViewset,SendSMSView, mark_notification_as_read , delete_notification , TimeSlotViewSet
-from .views import upload_file,DriverTransportsView
+from .views import upload_file,DriverTransportsView,DeleteEventsByDate
 
 router = DefaultRouter()
 router.register(r'roles',RoleViewset)
@@ -55,7 +55,7 @@ urlpatterns = [
     path('notifications/<int:notification_id>/', delete_notification, name='delete-notification'),
     path('upload/', upload_file, name='upload_file'),
     path('api/driver-transports/', DriverTransportsView.as_view(), name='driver-transports'),
-
+    path('events/delete-by-date/', DeleteEventsByDate.as_view(), name='delete_events_by_date'),
 ]
 
 

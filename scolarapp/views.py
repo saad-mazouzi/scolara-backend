@@ -41,7 +41,7 @@ from django.db.models.signals import post_save
 from rest_framework.response import Response
 from .serializers import TimeSlotSerializer
 from .models import TimeSlot
-from datetime import date
+from datetime import date,datetime
 
 
 
@@ -1887,3 +1887,32 @@ class DriverTransportsView(APIView):
         transport_data = transports.values('id', 'name')
 
         return Response(transport_data, status=200)
+
+class DeleteEventsByDate(APIView):
+    """
+    API endpoint to delete all events for a specific date.
+    """
+    def delete(self, request, *args, **kwargs):
+        school_id = request.query_params.get('school_id')
+        selected_date = request.query_params.get('date')  # Date à supprimer
+
+        if not school_id:
+            return Response({"error": "Le paramètre 'school_id' est requis."}, status=status.HTTP_400_BAD_REQUEST)
+        
+        if not selected_date:
+            return Response({"error": "Le paramètre 'date' est requis."}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            # Convertir la date en objet datetime
+            selected_date = datetime.strptime(selected_date, '%Y-%m-%d').date()
+        except ValueError:
+            return Response({"error": "Le format de la date doit être 'YYYY-MM-DD'."}, status=status.HTTP_400_BAD_REQUEST)
+
+        events_to_delete = Event.objects.filter(school_id=school_id, date=selected_date)
+
+        if not events_to_delete.exists():
+            return Response({"message": "Aucun événement trouvé pour cette date."}, status=status.HTTP_404_NOT_FOUND)
+
+        count = events_to_delete.count()
+        events_to_delete.delete()
+        return Response({"message": f"{count} événement(s) supprimé(s) pour la date {selected_date}."}, status=status.HTTP_200_OK)
