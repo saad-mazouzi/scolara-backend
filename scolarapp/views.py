@@ -41,7 +41,7 @@ from django.db.models.signals import post_save
 from rest_framework.response import Response
 from .serializers import TimeSlotSerializer
 from .models import TimeSlot
-
+from datetime import date
 
 
 
@@ -1465,6 +1465,25 @@ class EventViewSet(viewsets.ModelViewSet):
         if not school_id:
             return Response({"error": "Le champ 'school' est requis."}, status=status.HTTP_400_BAD_REQUEST)
         return super().create(request, *args, **kwargs)
+    
+    @action(detail=False, methods=['delete'], url_path='delete-today')
+    def delete_today(self, request, *args, **kwargs):
+        """
+        Deletes all events scheduled for today.
+        """
+        school_id = request.query_params.get('school_id')
+        if not school_id:
+            return Response({"error": "Le paramètre 'school_id' est requis."}, status=status.HTTP_400_BAD_REQUEST)
+        
+        today = date.today()
+        events_to_delete = Event.objects.filter(school_id=school_id, date=today)
+
+        if not events_to_delete.exists():
+            return Response({"message": "Aucun événement trouvé pour aujourd'hui."}, status=status.HTTP_404_NOT_FOUND)
+
+        count = events_to_delete.count()
+        events_to_delete.delete()
+        return Response({"message": f"{count} événement(s) supprimé(s) pour aujourd'hui."}, status=status.HTTP_200_OK)
 
 
 class TransactionViewSet(viewsets.ModelViewSet):
@@ -1853,7 +1872,6 @@ def upload_file(request):
 
 
 class DriverTransportsView(APIView):
-    permission_classes = [IsAuthenticated]
 
     def get(self, request):
         user = request.user
