@@ -41,7 +41,7 @@ from django.db.models.signals import post_save
 from rest_framework.response import Response
 from .serializers import TimeSlotSerializer
 from .models import TimeSlot
-from datetime import date,datetime
+from datetime import date,datetime,timedelta
 
 
 
@@ -1904,7 +1904,7 @@ class DeleteEventsByDate(APIView):
 
         try:
             # Convertir la date en objet datetime
-            selected_date = datetime.strptime(selected_date, '%Y-%m-%d').date()
+            selected_date = datetime.strptime(selected_date, '%Y-%m-%d').date() + timedelta(days=1)
         except ValueError:
             return Response({"error": "Le format de la date doit être 'YYYY-MM-DD'."}, status=status.HTTP_400_BAD_REQUEST)
 
