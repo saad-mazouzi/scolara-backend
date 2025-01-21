@@ -124,7 +124,7 @@ class TimetableSession(models.Model):
     id = models.AutoField(primary_key=True)
     subject = models.ForeignKey(Subject,on_delete=models.CASCADE)
     teacher = models.ForeignKey(User, on_delete=models.CASCADE, limit_choices_to={'role__name': 'Enseignant'})
-    classroom = models.ForeignKey(Classroom, on_delete=models.CASCADE)
+    classroom = models.ForeignKey(Classroom, on_delete=models.CASCADE,null=True,blank=True)
     education_level=models.ForeignKey(EducationLevel,on_delete=models.CASCADE)
     day = models.CharField(max_length=50, choices=[
         ('Lundi', 'Lundi'),
