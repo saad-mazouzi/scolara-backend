@@ -1937,3 +1937,22 @@ class DuplicateTeacherEducationLevelsView(APIView):
         ).values('id', 'first_name', 'last_name', 'education_level__id', 'education_level__name')
 
         return Response(list(duplicated_teachers), status=status.HTTP_200_OK)
+
+
+class DuplicateTeacherSubjects(APIView):
+    """
+    Vue pour récupérer les niveaux d'éducation associés aux enseignants dupliqués.
+    """
+    def get(self, request, *args, **kwargs):
+        first_name = request.query_params.get('first_name')
+        last_name = request.query_params.get('last_name')
+
+        if not first_name or not last_name:
+            return Response({"error": "Les paramètres 'first_name' et 'last_name' sont requis."}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Récupérer les enseignants ayant le même prénom et nom
+        duplicated_teachers = User.objects.filter(
+            Q(first_name=first_name) & Q(last_name=last_name)
+        ).values('id', 'first_name', 'last_name', 'subject__id', 'subject__name')
+
+        return Response(list(duplicated_teachers), status=status.HTTP_200_OK)
