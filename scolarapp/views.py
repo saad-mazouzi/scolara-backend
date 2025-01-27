@@ -807,6 +807,9 @@ class UserViewSet(viewsets.ModelViewSet):
         else:
             student.next_payment_date = None  # Définir explicitement à None en cas d'absence
 
+        # Mettre à jour la remarque (champ remark)
+        student.remark = data.get('remark', student.remark)
+
         # Gestion de l'image de profil (optionnel)
         profile_picture = request.FILES.get('profile_picture', None)
         if profile_picture:
@@ -826,10 +829,11 @@ class UserViewSet(viewsets.ModelViewSet):
             {
                 'message': 'Etudiant mis à jour avec succès.',
                 'profile_picture': student.profile_picture.url if student.profile_picture else None,
-                'teacher': UserSerializer(student).data,
+                'student': UserSerializer(student).data,
             },
             status=status.HTTP_200_OK
         )
+
     
 
     @action(detail=True, methods=['put', 'patch'])

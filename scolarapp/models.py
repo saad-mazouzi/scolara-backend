@@ -92,6 +92,7 @@ class User(AbstractUser):
     monthly_payment = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True) 
     transportation_service = models.BooleanField(default=False)
     parent_key = models.CharField(max_length=255, null=True , blank=True)
+    remark = models.CharField(max_length=255, null=True, blank=True)
 
     # Champs spécifiques aux enseignants
     subject = models.ForeignKey(Subject,on_delete=models.CASCADE,null=True,blank=True)
