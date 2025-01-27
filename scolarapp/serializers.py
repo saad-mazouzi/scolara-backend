@@ -98,17 +98,31 @@ class UserSerializer(serializers.ModelSerializer):
             'password', 'role', 'date_joined', 'is_verified', 'subject',
             'profile_picture', 'gender', 'school', 'education_level','absences_number','paid',
             'monthly_salary','session_salary','next_payment_date', 'monthly_payment','transportation_service',
-            'parent_key','remark'
+            'parent_key','remark','parent'
         ]
         extra_kwargs = {
             'password': {'required': False, 'write_only': True},  # Facultatif et non retourné
             'address': {'required': False, 'allow_blank': True},  # Facultatif, accepte ""
         }
 
+    def get_parent(self, obj):
+        """Récupérer les informations du parent en lecture seule."""
+        if obj.parent:
+            return {
+                'id': obj.parent.id,
+                'first_name': obj.parent.first_name,
+                'last_name': obj.parent.last_name,
+                'email': obj.parent.email,
+                'phone_number': obj.parent.phone_number,
+            }
+        return None
+
     def create(self, validated_data):
 
         
         default_role, created = Role.objects.get_or_create(name='Étudiant')
+        parent_data = validated_data.pop('parent', None)
+
 
         # Générer un nom d'utilisateur unique
         first_name = validated_data.get('first_name', '')
@@ -131,6 +145,7 @@ class UserSerializer(serializers.ModelSerializer):
             school=validated_data.get('school', None),
             education_level=validated_data.get('education_level', None),
             remark=validated_data.get('remark', None),  # Inclure la remarque
+            parent=parent_data  # Associer un parent s'il est fourni
 
         )
         print(user)
@@ -154,6 +169,19 @@ class UserSerializer(serializers.ModelSerializer):
             return value
         except ValueError:
             raise serializers.ValidationError("La date doit être au format YYYY-MM-DD.")
+
+    def update(self, instance, validated_data):
+        # Gestion de la mise à jour du parent
+        parent_data = validated_data.pop('parent', None)
+        if parent_data:
+            instance.parent_id = parent_data
+
+        # Mise à jour des autres champs
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+
+        instance.save()
+        return instance
 
 
 class CourseSerializer(serializers.ModelSerializer):

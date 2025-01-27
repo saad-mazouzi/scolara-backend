@@ -742,11 +742,12 @@ class UserViewSet(viewsets.ModelViewSet):
     @action(detail=True, methods=['get'])
     def retrieve_student(self, request, pk=None):
         try:
-            student = User.objects.get(pk=pk, role__id=2)
+            student = User.objects.get(pk=pk, role__name='Étudiant')
             serializer = UserSerializer(student)
             return Response(serializer.data, status=status.HTTP_200_OK)
         except User.DoesNotExist:
             return Response({"detail": "Étudiant non trouvé."}, status=status.HTTP_404_NOT_FOUND)
+
         
     @action(detail=True, methods=['get'])
     def retrieve_parent(self, request, pk=None):
@@ -783,6 +784,17 @@ class UserViewSet(viewsets.ModelViewSet):
         student.address = data.get('address', student.address)
         student.school_id = data.get('school', student.school_id)
         student.education_level_id = data.get('education_level', student.education_level_id)
+
+        parent_id = data.get('parent', None)
+        if parent_id:
+            try:
+                parent = User.objects.get(pk=parent_id, role__name='Parent')  # Vérifier que le parent existe
+                student.parent = parent
+            except User.DoesNotExist:
+                return Response({"detail": "Parent non trouvé."}, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            student.parent = None  # Si aucun parent n'est fourni, dissocier
+
 
         # Mise à jour du statut de paiement
         paid = data.get('paid', student.paid)
