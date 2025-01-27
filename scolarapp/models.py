@@ -63,12 +63,7 @@ class Subject(models.Model):
     
 class User(AbstractUser):
 
-    PAYMENT_FREQUENCY_CHOICES=[
-        ('Monthly_payment','Monthly_payment'),
-        ('Quarterly_payment','Quarterly_payment'),
-        ('Semi_annual','Semi_annual'),
-        ('Annual_payment','Annual_payment'),
-    ]
+
 
     profile_picture = models.ImageField(
         upload_to='profile_pictures/', 
@@ -88,7 +83,6 @@ class User(AbstractUser):
     payment_done = models.BooleanField(default=False)
     phone_number = models.CharField(max_length=255)
     address = models.CharField(max_length=255)
-    payment_frequency = models.CharField(max_length=100, choices=PAYMENT_FREQUENCY_CHOICES)
     monthly_payment = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True) 
     transportation_service = models.BooleanField(default=False)
     parent_key = models.CharField(max_length=255, null=True , blank=True)
@@ -103,6 +97,15 @@ class User(AbstractUser):
     monthly_salary = models.DecimalField(max_digits=8, decimal_places=2, null=True, blank=True)  # Champ de salaire
     session_salary = models.DecimalField(max_digits=8, decimal_places=2, null=True, blank=True)  # Champ de salaire
     next_payment_date = models.DateField(null=True, blank=True)  # Ajout du champ
+
+    parent = models.ForeignKey(  # Relation Parent-Étudiant
+        'self',  # Relation vers le même modèle
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='children',  # Facilite l'accès aux enfants depuis le parent
+        limit_choices_to={'role__name': 'Parent'}  # Limite les choix aux utilisateurs ayant le rôle "Parent"
+    )
 
     def generate_parent_key(self):
         self.parent_key = get_random_secret_key()
