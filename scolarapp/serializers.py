@@ -98,7 +98,7 @@ class UserSerializer(serializers.ModelSerializer):
             'password', 'role', 'date_joined', 'is_verified', 'subject',
             'profile_picture', 'gender', 'school', 'education_level','absences_number','paid',
             'monthly_salary','session_salary','next_payment_date', 'monthly_payment','transportation_service',
-            'parent_key'
+            'parent_key','remark'
         ]
         extra_kwargs = {
             'password': {'required': False, 'write_only': True},  # Facultatif et non retourné
@@ -130,6 +130,8 @@ class UserSerializer(serializers.ModelSerializer):
             gender=validated_data.get('gender', None),
             school=validated_data.get('school', None),
             education_level=validated_data.get('education_level', None),
+            remark=validated_data.get('remark', None),  # Inclure la remarque
+
         )
         print(user)
 
