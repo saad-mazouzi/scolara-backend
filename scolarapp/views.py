@@ -785,7 +785,11 @@ class UserViewSet(viewsets.ModelViewSet):
         student.school_id = data.get('school', student.school_id)
         student.education_level_id = data.get('education_level', student.education_level_id)
 
+        # Mise à jour du parent
         parent_id = data.get('parent', None)
+        if parent_id == "null":  # Si la valeur est la chaîne "null", on la convertit en None
+            parent_id = None
+
         if parent_id:
             try:
                 parent = User.objects.get(pk=parent_id, role__name='Parent')  # Vérifier que le parent existe
@@ -793,8 +797,7 @@ class UserViewSet(viewsets.ModelViewSet):
             except User.DoesNotExist:
                 return Response({"detail": "Parent non trouvé."}, status=status.HTTP_400_BAD_REQUEST)
         else:
-            student.parent = None  # Si aucun parent n'est fourni, dissocier
-
+            student.parent = None  # Si aucun parent n'est fourni ou valide, dissocier
 
         # Mise à jour du statut de paiement
         paid = data.get('paid', student.paid)
@@ -839,12 +842,13 @@ class UserViewSet(viewsets.ModelViewSet):
 
         return Response(
             {
-                'message': 'Etudiant mis à jour avec succès.',
+                'message': 'Étudiant mis à jour avec succès.',
                 'profile_picture': student.profile_picture.url if student.profile_picture else None,
                 'student': UserSerializer(student).data,
             },
             status=status.HTTP_200_OK
         )
+
 
     
 
