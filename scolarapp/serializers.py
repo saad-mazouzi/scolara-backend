@@ -90,6 +90,7 @@ class TransportSerializer(serializers.ModelSerializer):
 
         
 class UserSerializer(serializers.ModelSerializer):
+    children = serializers.SerializerMethodField()
 
     class Meta:
         model = User
@@ -98,7 +99,7 @@ class UserSerializer(serializers.ModelSerializer):
             'password', 'role', 'date_joined', 'is_verified', 'subject',
             'profile_picture', 'gender', 'school', 'education_level','absences_number','paid',
             'monthly_salary','session_salary','next_payment_date', 'monthly_payment','transportation_service',
-            'parent_key','remark','parent'
+            'parent_key','remark','parent','children'
         ]
         extra_kwargs = {
             'password': {'required': False, 'write_only': True},  # Facultatif et non retourné
@@ -182,6 +183,14 @@ class UserSerializer(serializers.ModelSerializer):
 
         instance.save()
         return instance
+    
+    def get_children(self, obj):
+        if obj.role and obj.role.name == "Parent":
+            return [
+                {"id": child.id, "first_name": child.first_name, "last_name": child.last_name}
+                for child in obj.children.all()
+            ]
+        return []
 
 
 class CourseSerializer(serializers.ModelSerializer):
