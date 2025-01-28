@@ -2,6 +2,8 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.utils import timezone
 from django.core.management.utils import get_random_secret_key
+import random
+import string
 
 
 # Create your models here.
@@ -63,8 +65,6 @@ class Subject(models.Model):
     
 class User(AbstractUser):
 
-
-
     profile_picture = models.ImageField(
         upload_to='profile_pictures/', 
         default='profile_pictures/profile_picture.png',  # Chemin relatif dans le bucket S3
@@ -108,7 +108,7 @@ class User(AbstractUser):
     )
 
     def generate_parent_key(self):
-        self.parent_key = get_random_secret_key()
+        self.parent_key = ''.join(random.choices(string.ascii_letters + string.digits, k=10))
 
 
     def __str__(self):
