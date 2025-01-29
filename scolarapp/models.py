@@ -361,6 +361,7 @@ class Notice(models.Model):
     content = models.TextField()
     school = models.ForeignKey(School, on_delete=models.CASCADE, related_name='notices')
     created_at = models.DateTimeField(auto_now_add=True)
+    roles = models.ManyToManyField('Role', related_name='notices')
 
     def __str__(self):
         return self.title
