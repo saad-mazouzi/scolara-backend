@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import User,Role,EducationLevel,School,Classroom,Timetable,Subject,TimetableSession,Course,CourseFile,Grade,Transport,Location,TransportLocation,Event,Transaction,TeacherAvailability,Control,ChatRoom,Message,Notification,TimeSlot
+from .models import User,Role,EducationLevel,School,Classroom,Timetable,Subject,TimetableSession,Course,CourseFile,Grade,Transport,Location,TransportLocation,Event,Transaction,TeacherAvailability,Control,ChatRoom,Message,Notification,TimeSlot,Notice
 from django.contrib.auth.hashers import make_password
 import random
 import string
@@ -29,6 +29,11 @@ class EducationLevelSerializer(serializers.ModelSerializer):
 class TimetableSerializer(serializers.ModelSerializer):
     class Meta:
         model = Timetable
+        fields = '__all__'
+
+class NoticeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Notice
         fields = '__all__'
         
 class ClassroomSerializer(serializers.ModelSerializer):

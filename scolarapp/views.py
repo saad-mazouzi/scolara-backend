@@ -1,6 +1,6 @@
 from django.shortcuts import render
-from .models import Role,User,EducationLevel,School,Classroom,Timetable,Subject,TimetableSession,CourseFile,Course,Grade,Transaction,TeacherAvailability,Control,ChatRoom,Message
-from .serializers import UserSerializer,RoleSerializer,EducationLevelSerializer,SchoolSerializer,ClassroomSerializer,TimetableSerializer,SubjectSerializer,TimetableSessionSerializer,CourseFileSerializer,CourseSerializer,GradeSerializer,TransactionSerializer,TeacherAvailabilitySerializer,ControlSerializer,ChatRoomSerializer,MessageSerializer, NotificationSerializer
+from .models import Role,User,EducationLevel,School,Classroom,Timetable,Subject,TimetableSession,CourseFile,Course,Grade,Transaction,TeacherAvailability,Control,ChatRoom,Message,Notice
+from .serializers import UserSerializer,RoleSerializer,EducationLevelSerializer,SchoolSerializer,ClassroomSerializer,TimetableSerializer,SubjectSerializer,TimetableSessionSerializer,CourseFileSerializer,CourseSerializer,GradeSerializer,TransactionSerializer,TeacherAvailabilitySerializer,ControlSerializer,ChatRoomSerializer,MessageSerializer, NotificationSerializer,NoticeSerializer
 from rest_framework.parsers import MultiPartParser, FormParser,JSONParser
 from sib_api_v3_sdk.rest import ApiException
 from rest_framework.decorators import action
@@ -239,6 +239,16 @@ class TimetableSessionViewSet(viewsets.ModelViewSet):
             queryset = queryset.filter(education_level=education_level)
         
         return queryset
+    
+class NoticeViewSet(viewsets.ModelViewSet):
+    queryset = Notice.objects.all()
+    serializer_class = NoticeSerializer
+
+    def get_queryset(self):
+        school_id = self.request.query_params.get('school_id')
+        if school_id:
+            return Notice.objects.filter(school_id=school_id)
+        return Notice.objects.all()
     
 class SubjectViewSet(viewsets.ModelViewSet):
     queryset = Subject.objects.all()
@@ -1976,3 +1986,4 @@ class DuplicateTeacherSubjects(APIView):
         ).values('id', 'first_name', 'last_name', 'subject__id', 'subject__name')
 
         return Response(list(duplicated_teachers), status=status.HTTP_200_OK)
+    
