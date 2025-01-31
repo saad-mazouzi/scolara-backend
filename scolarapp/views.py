@@ -272,6 +272,23 @@ class NoticeViewSet(viewsets.ModelViewSet):
 
         return queryset
     
+    @action(detail=True, methods=['delete'], url_path='delete')
+    def delete_notice(self, request, pk=None):
+        """
+        Supprime un avis spécifique si l'utilisateur est Administrateur.
+        """
+        user = request.user
+
+        if not user.is_authenticated or not user.role or user.role.name != "Administrateur":
+            return Response({"error": "Permission refusée"}, status=status.HTTP_403_FORBIDDEN)
+
+        try:
+            notice = Notice.objects.get(pk=pk)
+            notice.delete()
+            return Response({"message": "Avis supprimé avec succès"}, status=status.HTTP_204_NO_CONTENT)
+        except Notice.DoesNotExist:
+            return Response({"error": "Avis introuvable"}, status=status.HTTP_404_NOT_FOUND)
+    
 class SubjectViewSet(viewsets.ModelViewSet):
     queryset = Subject.objects.all()
     serializer_class = SubjectSerializer
