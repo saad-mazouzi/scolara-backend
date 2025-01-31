@@ -241,18 +241,26 @@ class TimetableSessionViewSet(viewsets.ModelViewSet):
         return queryset
     
 
+
 class NoticeViewSet(viewsets.ModelViewSet):
     serializer_class = NoticeSerializer
-    # permission_classes = [IsAuthenticated]  # Restreindre aux utilisateurs authentifiés
 
     def get_queryset(self):
-        school_id = self.request.query_params.get('school_id')
         user = self.request.user  # Récupérer l'utilisateur connecté
 
-        # Assurez-vous que l'utilisateur a un rôle
-        if not user.role:
+        # Vérifier si l'utilisateur est authentifié
+        if not user.is_authenticated:
+            return Notice.objects.none()  # Aucun avis pour les utilisateurs non connectés
+
+        # Si l'utilisateur est un administrateur, il peut voir tous les avis
+        if user.role and user.role.name == "Administrateur":
+            return Notice.objects.all()
+
+        # Si l'utilisateur n'a pas de rôle, il ne voit aucun avis
+        if not hasattr(user, 'role') or not user.role:
             return Notice.objects.none()
 
+        school_id = self.request.query_params.get('school_id')
         queryset = Notice.objects.all()
 
         # Filtrer par école si `school_id` est fourni
