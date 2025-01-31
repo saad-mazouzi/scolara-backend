@@ -240,15 +240,29 @@ class TimetableSessionViewSet(viewsets.ModelViewSet):
         
         return queryset
     
+
 class NoticeViewSet(viewsets.ModelViewSet):
-    queryset = Notice.objects.all()
     serializer_class = NoticeSerializer
+    # permission_classes = [IsAuthenticated]  # Restreindre aux utilisateurs authentifiés
 
     def get_queryset(self):
         school_id = self.request.query_params.get('school_id')
+        user = self.request.user  # Récupérer l'utilisateur connecté
+
+        # Assurez-vous que l'utilisateur a un rôle
+        if not user.role:
+            return Notice.objects.none()
+
+        queryset = Notice.objects.all()
+
+        # Filtrer par école si `school_id` est fourni
         if school_id:
-            return Notice.objects.filter(school_id=school_id)
-        return Notice.objects.all()
+            queryset = queryset.filter(school_id=school_id)
+
+        # Filtrer par rôle de l'utilisateur connecté
+        queryset = queryset.filter(roles__id=user.role.id)
+
+        return queryset
     
 class SubjectViewSet(viewsets.ModelViewSet):
     queryset = Subject.objects.all()
