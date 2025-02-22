@@ -1,5 +1,5 @@
 from rest_framework.routers import DefaultRouter
-from .views import UserViewSet,RoleViewset,VerifyEmailView,RequestPasswordResetView,PasswordResetConfirmView,fetch_schools,EducationLevelViewset,SchoolViewSet,education_levels_by_school,ClassroomViewset,TimetableViewSet,SubjectViewSet,TimetableSessionViewSet, GradeViewSet,dashboard_summary,EventViewSet,TransactionViewSet,verify_secret_key,get_student_info,TeacherAvailabilityViewset,ControlViewSet,get_education_level_by_parent_key,get_school_by_parent_key,get_student_by_parent_key,get_absences_by_parent_key,get_stations_by_driver_id,get_teachers_by_subject,ChatRoomViewSet,MessageViewSet, NotificationViewSet,NoticeViewSet
+from .views import UserViewSet,RoleViewset,VerifyEmailView,RequestPasswordResetView,PasswordResetConfirmView,fetch_schools,EducationLevelViewset,SchoolViewSet,education_levels_by_school,ClassroomViewset,TimetableViewSet,SubjectViewSet,TimetableSessionViewSet, GradeViewSet,dashboard_summary,EventViewSet,TransactionViewSet,verify_secret_key,get_student_info,TeacherAvailabilityViewset,ControlViewSet,get_education_level_by_parent_key,get_school_by_parent_key,get_student_by_parent_key,get_absences_by_parent_key,get_stations_by_driver_id,get_teachers_by_subject,ChatRoomViewSet,MessageViewSet, NotificationViewSet,NoticeViewSet,HomeworkBookViewSet
 from django.urls import path,include
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from .views import TransportViewSet,LocationViewSet,TransportLocationViewSet
@@ -30,6 +30,7 @@ router.register(r'messages', MessageViewSet, basename='message')
 router.register(r'notifications' , NotificationViewSet , basename='notification')
 router.register(r'timeslots', TimeSlotViewSet, basename='timeslot')
 router.register(r'notices', NoticeViewSet, basename='notice')
+router.register(r'homework-books', HomeworkBookViewSet, basename='homework-book')
 
 
 

@@ -1,6 +1,6 @@
 from django.shortcuts import render
-from .models import Role,User,EducationLevel,School,Classroom,Timetable,Subject,TimetableSession,CourseFile,Course,Grade,Transaction,TeacherAvailability,Control,ChatRoom,Message,Notice
-from .serializers import UserSerializer,RoleSerializer,EducationLevelSerializer,SchoolSerializer,ClassroomSerializer,TimetableSerializer,SubjectSerializer,TimetableSessionSerializer,CourseFileSerializer,CourseSerializer,GradeSerializer,TransactionSerializer,TeacherAvailabilitySerializer,ControlSerializer,ChatRoomSerializer,MessageSerializer, NotificationSerializer,NoticeSerializer
+from .models import Role,User,EducationLevel,School,Classroom,Timetable,Subject,TimetableSession,CourseFile,Course,Grade,Transaction,TeacherAvailability,Control,ChatRoom,Message,Notice,HomeworkBook
+from .serializers import UserSerializer,RoleSerializer,EducationLevelSerializer,SchoolSerializer,ClassroomSerializer,TimetableSerializer,SubjectSerializer,TimetableSessionSerializer,CourseFileSerializer,CourseSerializer,GradeSerializer,TransactionSerializer,TeacherAvailabilitySerializer,ControlSerializer,ChatRoomSerializer,MessageSerializer, NotificationSerializer,NoticeSerializer,HomeworkBookSerializer
 from rest_framework.parsers import MultiPartParser, FormParser,JSONParser
 from sib_api_v3_sdk.rest import ApiException
 from rest_framework.decorators import action
@@ -319,7 +319,26 @@ class SubjectViewSet(viewsets.ModelViewSet):
             queryset = queryset.filter(education_level_id=education_level_id)  # Correspond à la requête frontend
         
         return queryset
-
+    
+class HomeworkBookViewSet(viewsets.ModelViewSet):
+    """
+    ViewSet for HomeworkBook, filtered by Education Level.
+    """
+    serializer_class = HomeworkBookSerializer
+    
+    def get_queryset(self):
+        """
+        Filter HomeworkBook by education level.
+        If 'education_level' is provided as a query parameter,
+        only HomeworkBooks related to that level will be returned.
+        """
+        queryset = HomeworkBook.objects.all()
+        education_level = self.request.query_params.get('education_level', None)
+        
+        if education_level:
+            queryset = queryset.filter(education_level=education_level)
+        
+        return queryset
 
 
 class GradeViewSet(viewsets.ModelViewSet):
@@ -1166,9 +1185,7 @@ class UserViewSet(viewsets.ModelViewSet):
         teacher.monthly_salary = data.get('monthly_salary', teacher.monthly_salary)
         teacher.session_salary = data.get('session_salary', teacher.session_salary)
 
-        # next_payment_date = data.get('next_payment_date', None)
-        # if next_payment_date:
-        #     teacher.next_payment_date = next_payment_date
+
 
         # Récupérer l'instance du sujet à partir de l'ID, si fourni
         subject_id = data.get('subject', None)

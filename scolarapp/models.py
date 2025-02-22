@@ -96,7 +96,6 @@ class User(AbstractUser):
 
     monthly_salary = models.DecimalField(max_digits=8, decimal_places=2, null=True, blank=True)  # Champ de salaire
     session_salary = models.DecimalField(max_digits=8, decimal_places=2, null=True, blank=True)  # Champ de salaire
-    # next_payment_date = models.DateField(null=True, blank=True)  # Ajout du champ
 
     parent = models.ForeignKey(  # Relation Parent-Étudiant
         'self',  # Relation vers le même modèle
@@ -365,3 +364,30 @@ class Notice(models.Model):
 
     def __str__(self):
         return self.title
+
+from django.db import models
+from django.contrib.auth import get_user_model
+
+User = get_user_model()
+
+class HomeworkBook(models.Model):
+    """Model representing a homework book entry for a teacher."""
+    
+    teacher = models.ForeignKey(User, on_delete=models.CASCADE, limit_choices_to={'role__name': 'Enseignant'})
+    education_level = models.ForeignKey(
+        "EducationLevel",  # Replace with your corresponding model
+        on_delete=models.CASCADE,
+        related_name="homework_books",
+    )
+    title = models.CharField(max_length=255, verbose_name="Title")
+    content = models.TextField(verbose_name="Content")
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name="Created At")
+    homework_due_date = models.DateField(verbose_name="Homework Due Date")
+
+    class Meta:
+        ordering = ["-created_at"]
+        verbose_name = "Homework Book"
+        verbose_name_plural = "Homework Books"
+
+    def __str__(self):
+        return f"{self.title} - {self.education_level} - {self.teacher}"
