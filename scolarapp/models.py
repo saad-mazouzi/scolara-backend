@@ -30,7 +30,7 @@ class School(models.Model):
     address = models.CharField(max_length=255,null = True, blank = True)
     phone_number = models.CharField(max_length=255,null = True, blank = True)
     semestre = models.CharField(max_length=255, null = True , blank = True)
-    # Ajoutez d'autres champs nécessaires pour votre modèle d'école
+    sms_count = models.PositiveIntegerField(default=0)  # Compteur de SMS envoyés
 
     def __str__(self):
         return self.name

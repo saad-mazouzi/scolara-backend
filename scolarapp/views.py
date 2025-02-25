@@ -1521,24 +1521,26 @@ class PasswordResetConfirmView(APIView):
 
 @method_decorator(csrf_exempt, name='dispatch')
 class SendSMSView(APIView):
-    def post(self, request):
+    def post(self, request, school_id):
         phone_number = request.data.get('phone_number')
         message = request.data.get('message', 'Voici un SMS de démonstration.')
 
         if not phone_number:
             return Response({'error': 'Numéro de téléphone manquant.'}, status=status.HTTP_400_BAD_REQUEST)
 
+        # Récupération de l'école
+        school = get_object_or_404(School, id=school_id)
+
         try:
-            # Envoi du SMS via Twilio
-            response_sid = send_sms(user=None, phone_number=phone_number, message=message)
+            # Tentative d'envoi du SMS
+            response_sid = send_sms(school=school, phone_number=phone_number, message=message)
             return Response({
                 'message': 'SMS envoyé avec succès.',
-                'twilio_message_sid': response_sid  # Renvoi de l'ID du message pour le suivi
+                'twilio_message_sid': response_sid
             }, status=status.HTTP_200_OK)
-
         except Exception as e:
-            return Response({'error': f'Erreur lors de l\'envoi du SMS : {str(e)}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
+            return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+        
 @api_view(['GET'])
 def education_levels_by_school(request, school_id):
     levels = EducationLevel.objects.filter(school_id=school_id)

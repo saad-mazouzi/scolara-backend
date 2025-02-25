@@ -62,19 +62,28 @@ def send_reset_password_email(user, token):
         print(f"Erreur lors de l'envoi de l'email : {str(e)}")
 
 
-def send_sms(user, phone_number, message):
+def send_sms(school, phone_number, message):
+    # Vérification du quota de SMS
+    if school.sms_count >= 50:
+        raise Exception("Quota de SMS atteint. Veuillez contacter l'administrateur pour augmenter votre limite.")
+
     # Configuration de Twilio
     client = Client(settings.TWILIO_ACCOUNT_SID, settings.TWILIO_AUTH_TOKEN)
 
     try:
-        # Envoi du SMS via Twilio avec Messaging Service SID
+        # Envoi du SMS via Twilio
         sms = client.messages.create(
             body=message,
-            messaging_service_sid=settings.MESSAGING_SERVICE_SID,  # Utilisation du Messaging Service SID
-            to=phone_number  # Numéro du destinataire (format international)
+            messaging_service_sid=settings.MESSAGING_SERVICE_SID,
+            to=phone_number
         )
         print(f"SMS envoyé avec succès à {phone_number} (SID : {sms.sid})")
-        return sms.sid  # Retourner l'ID du message pour le suivi
+
+        # Incrémentation du compteur de SMS
+        school.sms_count += 1
+        school.save()
+
+        return sms.sid  # Retourne l'ID du message pour le suivi
     except Exception as e:
         print(f"Erreur lors de l'envoi du SMS : {str(e)}")
         raise e
