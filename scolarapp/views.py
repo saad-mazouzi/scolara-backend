@@ -502,7 +502,7 @@ class UserViewSet(viewsets.ModelViewSet):
             user.save()
 
             # Envoyer l'email de vérification
-            send_verification_email(user)
+            # send_verification_email(user)
 
             return Response({
                 'message': 'Utilisateur enregistré avec succès. Veuillez vérifier votre email.',
