@@ -1,5 +1,5 @@
 from rest_framework.routers import DefaultRouter
-from .views import UserViewSet,RoleViewset,VerifyEmailView,RequestPasswordResetView,PasswordResetConfirmView,fetch_schools,EducationLevelViewset,SchoolViewSet,education_levels_by_school,ClassroomViewset,TimetableViewSet,SubjectViewSet,TimetableSessionViewSet, GradeViewSet,dashboard_summary,EventViewSet,TransactionViewSet,verify_secret_key,get_student_info,TeacherAvailabilityViewset,ControlViewSet,get_education_level_by_parent_key,get_school_by_parent_key,get_student_by_parent_key,get_absences_by_parent_key,get_stations_by_driver_id,get_teachers_by_subject,ChatRoomViewSet,MessageViewSet, NotificationViewSet,NoticeViewSet,HomeworkBookViewSet
+from .views import UserViewSet,RoleViewset,VerifyEmailView,RequestPasswordResetView,PasswordResetConfirmView,fetch_schools,EducationLevelViewset,SchoolViewSet,education_levels_by_school,ClassroomViewset,TimetableViewSet,SubjectViewSet,TimetableSessionViewSet, GradeViewSet,dashboard_summary,EventViewSet,TransactionViewSet,verify_secret_key,get_student_info,TeacherAvailabilityViewset,ControlViewSet,get_education_level_by_parent_key,get_school_by_parent_key,get_student_by_parent_key,get_absences_by_parent_key,get_stations_by_driver_id,get_teachers_by_subject,ChatRoomViewSet,MessageViewSet, NotificationViewSet,NoticeViewSet,HomeworkBookViewSet,students_payment_status,teachers_payment_status,drivers_payment_status
 from django.urls import path,include
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from .views import TransportViewSet,LocationViewSet,TransportLocationViewSet
@@ -56,6 +56,9 @@ urlpatterns = [
     path('notifications/<int:notification_id>/read/', mark_notification_as_read, name='mark-notification-as-read'),
     path('notifications/<int:notification_id>/', delete_notification, name='delete-notification'),
     path('upload/', upload_file, name='upload_file'),
+    path('api/students_payment_status/', students_payment_status, name='students_payment_status'),
+    path('api/teachers_payment_status/', teachers_payment_status, name='teachers_payment_status'),
+    path('api/drivers_payment_status/', drivers_payment_status, name='drivers_payment_status'),
     path('api/driver-transports/', DriverTransportsView.as_view(), name='driver-transports'),
     path('events/delete-by-date/', DeleteEventsByDate.as_view(), name='delete_events_by_date'),
     path('api/duplicate-teacher-education-levels/', DuplicateTeacherEducationLevelsView.as_view(), name='duplicate-teacher-education-levels'),

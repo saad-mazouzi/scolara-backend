@@ -43,6 +43,7 @@ from .serializers import TimeSlotSerializer
 from .models import TimeSlot
 from datetime import date,datetime,timedelta
 from django.db.models import Q, Count
+from django.db.models.functions import Lower
 
 
 
@@ -1452,7 +1453,99 @@ def dashboard_summary(request):
         "female_students_count": female_students_count,
     }
     return Response(data)
-            
+
+@api_view(['GET'])
+def students_payment_status(request):
+    school_id = request.GET.get('school_id')
+    
+    if not school_id:
+        return Response(
+            {"error": "Aucun ID d'école trouvé dans les paramètres de la requête."},
+            status=status.HTTP_400_BAD_REQUEST
+        )
+    
+    paid_students_count = User.objects.filter(role__name="Étudiant", school__id=school_id, paid=True).count()
+    unpaid_students_count = User.objects.filter(role__name="Étudiant", school__id=school_id, paid=False).count()
+    
+    data = {
+        "paid_students_count": paid_students_count,
+        "unpaid_students_count": unpaid_students_count,
+    }
+    
+    return Response(data)
+
+
+@api_view(['GET'])
+def drivers_payment_status(request):
+    school_id = request.GET.get('school_id')
+    
+    if not school_id:
+        return Response(
+            {"error": "Aucun ID d'école trouvé dans les paramètres de la requête."},
+            status=status.HTTP_400_BAD_REQUEST
+        )
+    
+    paid_drivers_count = User.objects.filter(role__name="Chauffeur", school__id=school_id, paid=True).count()
+    unpaid_drivers_count = User.objects.filter(role__name="Chauffeur", school__id=school_id, paid=False).count()
+    
+    data = {
+        "paid_drivers_count": paid_drivers_count,
+        "unpaid_drivers_count": unpaid_drivers_count,
+    }
+    
+    return Response(data)
+
+
+from django.db.models.functions import Lower
+from collections import defaultdict
+
+@api_view(['GET'])
+def teachers_payment_status(request):
+    school_id = request.GET.get('school_id')
+
+    if not school_id:
+        return Response(
+            {"error": "Aucun ID d'école trouvé dans les paramètres de la requête."},
+            status=status.HTTP_400_BAD_REQUEST
+        )
+
+    # Récupérer tous les enseignants et les normaliser
+    teachers = User.objects.filter(
+        role__name="Enseignant",
+        school__id=school_id
+    ).annotate(
+        first_name_lower=Lower('first_name'),
+        last_name_lower=Lower('last_name')
+    ).values(
+        'first_name_lower', 'last_name_lower', 'paid'
+    )
+
+    # Dictionnaire pour stocker chaque enseignant unique
+    unique_teachers = {}
+
+    for teacher in teachers:
+        key = (teacher['first_name_lower'], teacher['last_name_lower'])
+        
+        # Si l'enseignant existe déjà, on met paid à True si l'un des statuts l'était
+        if key in unique_teachers:
+            unique_teachers[key] = unique_teachers[key] or teacher['paid']
+        else:
+            unique_teachers[key] = teacher['paid']
+
+    # Compter les enseignants payés et non payés sans doublons
+    paid_teachers_count = sum(1 for status in unique_teachers.values() if status)
+    unpaid_teachers_count = sum(1 for status in unique_teachers.values() if not status)
+
+    print(f"Unique Teachers Processed: {unique_teachers}")
+
+    data = {
+        "paid_teachers_count": paid_teachers_count,
+        "unpaid_teachers_count": unpaid_teachers_count,
+    }
+
+    return Response(data)
+
+
 @api_view(['GET'])
 def fetch_schools(request):
     # Récupérer toutes les écoles distinctes des utilisateurs
