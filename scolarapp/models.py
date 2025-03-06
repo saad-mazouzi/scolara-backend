@@ -391,3 +391,13 @@ class HomeworkBook(models.Model):
 
     def __str__(self):
         return f"{self.title} - {self.education_level} - {self.teacher}"
+
+class DriverLocation(models.Model):
+    driver = models.OneToOneField(User, on_delete=models.CASCADE)  # Associe un chauffeur
+    device_id = models.CharField(max_length=100, unique=True)  # Identifiant de OwnTracks
+    latitude = models.FloatField()
+    longitude = models.FloatField()
+    timestamp = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"{self.driver.username} - {self.latitude}, {self.longitude}"

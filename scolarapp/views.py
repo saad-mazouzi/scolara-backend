@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from .models import Role,User,EducationLevel,School,Classroom,Timetable,Subject,TimetableSession,CourseFile,Course,Grade,Transaction,TeacherAvailability,Control,ChatRoom,Message,Notice,HomeworkBook
+from .models import Role,User,EducationLevel,School,Classroom,Timetable,Subject,TimetableSession,CourseFile,Course,Grade,Transaction,TeacherAvailability,Control,ChatRoom,Message,Notice,HomeworkBook,DriverLocation
 from .serializers import UserSerializer,RoleSerializer,EducationLevelSerializer,SchoolSerializer,ClassroomSerializer,TimetableSerializer,SubjectSerializer,TimetableSessionSerializer,CourseFileSerializer,CourseSerializer,GradeSerializer,TransactionSerializer,TeacherAvailabilitySerializer,ControlSerializer,ChatRoomSerializer,MessageSerializer, NotificationSerializer,NoticeSerializer,HomeworkBookSerializer
 from rest_framework.parsers import MultiPartParser, FormParser,JSONParser
 from sib_api_v3_sdk.rest import ApiException
@@ -2151,3 +2151,24 @@ class DuplicateTeacherSubjects(APIView):
 
         return Response(list(duplicated_teachers), status=status.HTTP_200_OK)
     
+@api_view(['POST'])
+def update_location(request):
+    device_id = request.data.get('device_id')  # OwnTracks envoie ce device_id
+    latitude = request.data.get('latitude')
+    longitude = request.data.get('longitude')
+
+    try:
+        # Trouver le chauffeur en fonction du device_id
+        location = DriverLocation.objects.get(device_id=device_id)
+        location.latitude = latitude
+        location.longitude = longitude
+        location.save()
+        return Response({'message': 'Location updated'}, status=200)
+
+    except DriverLocation.DoesNotExist:
+        return Response({'error': 'Device ID not found'}, status=400)
+
+@api_view(['GET'])
+def get_driver_locations(request):
+    locations = DriverLocation.objects.all().values('driver__username', 'latitude', 'longitude', 'device_id')
+    return Response(list(locations))

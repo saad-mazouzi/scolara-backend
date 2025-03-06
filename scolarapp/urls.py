@@ -4,7 +4,7 @@ from django.urls import path,include
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from .views import TransportViewSet,LocationViewSet,TransportLocationViewSet
 from .views import SchoolViewSet,CourseViewset,CourseFileViewset,SendSMSView, mark_notification_as_read , delete_notification , TimeSlotViewSet
-from .views import upload_file,DriverTransportsView,DeleteEventsByDate,DuplicateTeacherEducationLevelsView,DuplicateTeacherSubjects
+from .views import upload_file,DriverTransportsView,DeleteEventsByDate,DuplicateTeacherEducationLevelsView,DuplicateTeacherSubjects,update_location,get_driver_locations
 
 router = DefaultRouter()
 router.register(r'roles',RoleViewset)
@@ -63,7 +63,8 @@ urlpatterns = [
     path('events/delete-by-date/', DeleteEventsByDate.as_view(), name='delete_events_by_date'),
     path('api/duplicate-teacher-education-levels/', DuplicateTeacherEducationLevelsView.as_view(), name='duplicate-teacher-education-levels'),
     path('api/duplicate-teacher-subjects/', DuplicateTeacherSubjects.as_view(), name='duplicate-teacher-subjects'),
-
+    path('api/update-location/', update_location, name='update_location'),
+    path('api/driver-locations/', get_driver_locations, name='get_driver_locations'),
 ]
 
 

@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Role,User,EducationLevel,School,Subject,Timetable,Transaction,Grade,Course,Event,Transport,Location,TransportLocation,Classroom,TeacherAvailability,TimetableSession,CourseFile,Control,ChatRoom,Message,Notification,TimeSlot,Notice
+from .models import Role,User,EducationLevel,School,Subject,Timetable,Transaction,Grade,Course,Event,Transport,Location,TransportLocation,Classroom,TeacherAvailability,TimetableSession,CourseFile,Control,ChatRoom,Message,Notification,TimeSlot,Notice,HomeworkBook,DriverLocation
 
 
 # Register your models here.
@@ -26,3 +26,5 @@ admin.site.register(Message)
 admin.site.register(Notification)
 admin.site.register(TimeSlot)
 admin.site.register(Notice)
+admin.site.register(HomeworkBook)
+admin.site.register(DriverLocation)
