@@ -2170,5 +2170,5 @@ def update_location(request):
 
 @api_view(['GET'])
 def get_driver_locations(request):
-    locations = DriverLocation.objects.all().values('driver__username', 'latitude', 'longitude', 'device_id')
+    locations = DriverLocation.objects.all().values('driver__last_name', 'latitude', 'longitude', 'device_id')
     return Response(list(locations))
