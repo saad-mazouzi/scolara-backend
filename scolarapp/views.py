@@ -2153,11 +2153,15 @@ class DuplicateTeacherSubjects(APIView):
     
 @api_view(['POST'])
 def update_location(request):
-    print("🚀 Données reçues :", json.dumps(request.data, indent=4))  # Log des données OwnTracks
+    print("🚀 Headers reçus :", request.headers)  # Voir si Content-Type est bien JSON
+    print("🚀 Données reçues :", json.dumps(request.data, indent=4))  # Voir le JSON reçu
+
+    if request.content_type != 'application/json':
+        return Response({'error': 'Invalid Content-Type'}, status=400)
 
     tid = request.data.get('tid')  # OwnTracks envoie 'tid' au lieu de 'device_id'
-    latitude = request.data.get('lat')  # OwnTracks utilise 'lat' au lieu de 'latitude'
-    longitude = request.data.get('lon')  # OwnTracks utilise 'lon' au lieu de 'longitude'
+    latitude = request.data.get('lat')  # OwnTracks utilise 'lat'
+    longitude = request.data.get('lon')  # OwnTracks utilise 'lon'
 
     if not tid or not latitude or not longitude:
         return Response({'error': 'Invalid data format'}, status=400)
@@ -2172,7 +2176,7 @@ def update_location(request):
 
     except DriverLocation.DoesNotExist:
         return Response({'error': 'Device ID (tid) not found'}, status=400)
-    
+        
 
 @api_view(['GET'])
 def get_driver_locations(request):
