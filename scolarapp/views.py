@@ -2153,9 +2153,14 @@ class DuplicateTeacherSubjects(APIView):
     
 @api_view(['POST'])
 def update_location(request):
-    device_id = request.data.get('device_id')  # OwnTracks envoie ce device_id
+    print("🚀 Données reçues :", json.dumps(request.data, indent=4))  # Log des données OwnTracks
+    
+    device_id = request.data.get('device_id')
     latitude = request.data.get('latitude')
     longitude = request.data.get('longitude')
+
+    if not device_id or not latitude or not longitude:
+        return Response({'error': 'Invalid data format'}, status=400)
 
     try:
         # Trouver le chauffeur en fonction du device_id
@@ -2167,7 +2172,8 @@ def update_location(request):
 
     except DriverLocation.DoesNotExist:
         return Response({'error': 'Device ID not found'}, status=400)
-
+    
+    
 @api_view(['GET'])
 def get_driver_locations(request):
     locations = DriverLocation.objects.all().values('driver__last_name', 'latitude', 'longitude', 'device_id')
