@@ -44,7 +44,7 @@ from .models import TimeSlot
 from datetime import date,datetime,timedelta
 from django.db.models import Q, Count
 from django.db.models.functions import Lower
-
+import json
 
 
 
@@ -2173,7 +2173,7 @@ def update_location(request):
     except DriverLocation.DoesNotExist:
         return Response({'error': 'Device ID not found'}, status=400)
     
-    
+
 @api_view(['GET'])
 def get_driver_locations(request):
     locations = DriverLocation.objects.all().values('driver__last_name', 'latitude', 'longitude', 'device_id')
