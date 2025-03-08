@@ -45,7 +45,7 @@ from datetime import date,datetime,timedelta
 from django.db.models import Q, Count
 from django.db.models.functions import Lower
 import json
-
+from urllib.parse import unquote
 
 
 # Create your views here.
@@ -1911,6 +1911,40 @@ def get_absences_by_parent_key(request, parent_key):
     except User.DoesNotExist:
         return JsonResponse({'error': 'Clé parent invalide ou étudiant introuvable.'}, status=404)
 
+@csrf_exempt
+def get_transport_by_parent_key(request, parent_key):
+    try:
+        # 🔹 Décodage de la clé parent si elle est encodée
+        decoded_key = unquote(parent_key)
+
+        # 🔹 Recherche de l'étudiant associé à la clé parent
+        student = User.objects.get(parent_key=decoded_key, role__name="Étudiant")
+
+        # 🔹 Trouver le transport auquel est associé l'étudiant
+        transport = Transport.objects.get(students=student)
+
+        # 🔹 Trouver la position du chauffeur associé à ce transport
+        print(f"🚀 Transport Driver ID: {transport.driver.id}")
+        driver_location = DriverLocation.objects.get(driver=transport.driver)
+
+        # 🔹 Retourner les informations du transport et la position GPS
+        data = {
+            'status': 'success',
+            'transport_id': transport.id,
+            'chauffeur': f"{transport.driver.first_name} {transport.driver.last_name}",
+            'latitude': driver_location.latitude,
+            'longitude': driver_location.longitude
+        }
+        return JsonResponse(data)
+
+    except User.DoesNotExist:
+        return JsonResponse({'status': 'error', 'message': 'Clé parent invalide ou étudiant introuvable.'}, status=404)
+    
+    except Transport.DoesNotExist:
+        return JsonResponse({'status': 'error', 'message': 'Aucun transport associé à cet enfant.'}, status=404)
+
+    except DriverLocation.DoesNotExist:
+        return JsonResponse({'status': 'error', 'message': 'Position du chauffeur non disponible.'}, status=404)
 
 def get_stations_by_driver_id(request,driver_id):
     from urllib.parse import unquote
@@ -2151,13 +2185,17 @@ class DuplicateTeacherSubjects(APIView):
 
         return Response(list(duplicated_teachers), status=status.HTTP_200_OK)
     
-@csrf_exempt  # Désactiver CSRF (nécessaire pour recevoir des requêtes externes)
+@csrf_exempt
 @api_view(['POST'])
 def update_location(request):
     try:
-        # 🔹 Forcer la lecture du JSON brut pour éviter l'erreur 400
-        data = json.loads(request.body.decode('utf-8'))  
-        print("🚀 Données reçues :", json.dumps(data, indent=4)) 
+        data = json.loads(request.body.decode('utf-8'))  # Charger le JSON brut
+        print("🚀 Données reçues :", json.dumps(data, indent=4))
+
+        # 🔹 Vérifier si OwnTracks envoie une localisation ou un statut
+        if data.get("_type") != "location":
+            print("⚠️ Ignoré : Ce n'est pas une position GPS.")
+            return JsonResponse({'message': 'Ignored non-location data'}, status=200)
 
         tid = data.get('tid')  # OwnTracks envoie 'tid'
         latitude = data.get('lat')  # OwnTracks utilise 'lat'
@@ -2167,7 +2205,7 @@ def update_location(request):
             return JsonResponse({'error': 'Invalid data format'}, status=400)
 
         try:
-            # Associer 'tid' à 'device_id' dans DriverLocation
+            # 🔹 Trouver le chauffeur dans DriverLocation
             location = DriverLocation.objects.get(device_id=tid)
             location.latitude = latitude
             location.longitude = longitude
@@ -2175,11 +2213,11 @@ def update_location(request):
             return JsonResponse({'message': 'Location updated'}, status=200)
 
         except DriverLocation.DoesNotExist:
-            return JsonResponse({'error': 'Device ID (tid) not found'}, status=400)
+            return JsonResponse({'error': 'Device ID (tid) not found'}, status=404)
 
     except json.JSONDecodeError:
         return JsonResponse({'error': 'Invalid JSON'}, status=400)
-        
+            
 
 @api_view(['GET'])
 def get_driver_locations(request):
