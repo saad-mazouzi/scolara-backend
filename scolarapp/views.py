@@ -2133,7 +2133,7 @@ class DeleteEventsByDate(APIView):
 
         try:
             # Convertir la date en objet datetime
-            selected_date = datetime.strptime(selected_date, '%Y-%m-%d').date() + timedelta(days=1)
+            selected_date = datetime.strptime(selected_date, '%Y-%m-%d').date()
         except ValueError:
             return Response({"error": "Le format de la date doit être 'YYYY-MM-DD'."}, status=status.HTTP_400_BAD_REQUEST)
 
