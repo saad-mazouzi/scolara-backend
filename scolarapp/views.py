@@ -323,22 +323,26 @@ class SubjectViewSet(viewsets.ModelViewSet):
     
 class HomeworkBookViewSet(viewsets.ModelViewSet):
     """
-    ViewSet for HomeworkBook, filtered by Education Level.
+    ViewSet for HomeworkBook, filtered by Education Level and Subject ID.
     """
     serializer_class = HomeworkBookSerializer
-    
+
     def get_queryset(self):
         """
-        Filter HomeworkBook by education level.
-        If 'education_level' is provided as a query parameter,
-        only HomeworkBooks related to that level will be returned.
+        Filter HomeworkBook by education level and subject ID.
+        If 'education_level' or 'subject_id' are provided as query parameters,
+        only matching HomeworkBooks will be returned.
         """
         queryset = HomeworkBook.objects.all()
         education_level = self.request.query_params.get('education_level', None)
-        
+        subject_id = self.request.query_params.get('subject_id', None)
+
         if education_level:
             queryset = queryset.filter(education_level=education_level)
-        
+
+        if subject_id:
+            queryset = queryset.filter(subject_id=subject_id)
+
         return queryset
 
 

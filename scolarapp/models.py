@@ -373,11 +373,20 @@ User = get_user_model()
 class HomeworkBook(models.Model):
     """Model representing a homework book entry for a teacher."""
     
-    teacher = models.ForeignKey(User, on_delete=models.CASCADE, limit_choices_to={'role__name': 'Enseignant'})
+    teacher = models.ForeignKey(
+        User, 
+        on_delete=models.CASCADE, 
+        limit_choices_to={'role__name': 'Enseignant'}
+    )
     education_level = models.ForeignKey(
-        "EducationLevel",  # Replace with your corresponding model
+        "EducationLevel",  # Remplace par ton modèle correspondant
         on_delete=models.CASCADE,
         related_name="homework_books",
+    )
+    subject = models.ForeignKey(
+        "Subject",  # Remplace par ton modèle correspondant
+        on_delete=models.CASCADE,
+        related_name="homework_books"
     )
     title = models.CharField(max_length=255, verbose_name="Title")
     content = models.TextField(verbose_name="Content")
@@ -390,7 +399,7 @@ class HomeworkBook(models.Model):
         verbose_name_plural = "Homework Books"
 
     def __str__(self):
-        return f"{self.title} - {self.education_level} - {self.teacher}"
+        return f"{self.title} - {self.education_level} - {self.subject} - {self.teacher}"
 
 class DriverLocation(models.Model):
     driver = models.OneToOneField(User, on_delete=models.CASCADE)  # Associe un chauffeur
